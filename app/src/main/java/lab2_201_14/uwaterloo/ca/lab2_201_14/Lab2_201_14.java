@@ -1,5 +1,6 @@
 package lab2_201_14.uwaterloo.ca.lab2_201_14;
 
+import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.hardware.SensorEventListener;
@@ -21,11 +22,13 @@ import ca.uwaterloo.sensortoy.LineGraphView;
 public class Lab2_201_14 extends AppCompatActivity {
     LineGraphView graph;
 
+    private static Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        Lab2_201_14.context = getApplicationContext();
 
         setContentView(R.layout.activity_lab2_201_14);
         SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -70,8 +73,12 @@ public class Lab2_201_14 extends AppCompatActivity {
 
     }
 
+    // Returns the application context
+    public static Context getAppContext() {
 
+        return Lab2_201_14.context;
 
+    }
 
 }
 

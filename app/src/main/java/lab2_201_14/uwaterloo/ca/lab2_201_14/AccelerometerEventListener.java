@@ -10,9 +10,12 @@ import android.widget.TextView;
 
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 import ca.uwaterloo.sensortoy.LineGraphView;
@@ -25,9 +28,6 @@ public class AccelerometerEventListener  implements SensorEventListener {
     // FIELDS //
     TextView output;
     LineGraphView graph;
-
-    PrintWriter outputStream = null;
-    boolean written = false;
 
     float x;
     float y;
@@ -69,33 +69,26 @@ public class AccelerometerEventListener  implements SensorEventListener {
             // Add point to graph
             graph.addPoint(se.values);
 
-            try {
-                if (!written) {
-                    printData();
-                    written = true;
-                }
-            } catch (IOException ex) {
-                Log.d("CATCHING IOEXCEPTION", "IOException caught!");
-            }
-
-
         }
 
-    }
-
-    // Print data to .txt file
-    public void printData() throws IOException {
-
+        // Output data to file
         try {
-            outputStream =  new PrintWriter(new FileWriter("accelerometer_data.txt"));
-            outputStream.println("Hello.");
-        } finally {
-            if (outputStream != null) {
-                outputStream.close();
-            }
+            // External storage
+            String i = "hey world "; //TODO
+            Context context = Lab2_201_14.getAppContext();
+
+            FileOutputStream os = new FileOutputStream(new File(context.getExternalFilesDir(null), "external.txt"));
+            PrintWriter osw = new PrintWriter(new OutputStreamWriter(os));
+
+            osw.println(i);
+            osw.close();
+
+        } catch(IOException e) {
+            Log.d("CATCHING IOEXCEPTION", "IOException caught!! AHHH!! OMG PANIC!");
         }
 
     }
+
 //JUNE 1
 //    Context context = Context.MODE_PRIVATE;
 //
