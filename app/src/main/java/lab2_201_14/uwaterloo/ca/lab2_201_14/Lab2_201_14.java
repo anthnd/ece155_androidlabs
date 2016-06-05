@@ -22,7 +22,7 @@ import ca.uwaterloo.sensortoy.LineGraphView;
 public class Lab2_201_14 extends AppCompatActivity {
     LineGraphView graph;
 
-    private static Context context;
+        private static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

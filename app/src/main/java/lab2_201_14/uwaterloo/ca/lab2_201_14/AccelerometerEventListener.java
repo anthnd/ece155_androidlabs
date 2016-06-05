@@ -28,6 +28,11 @@ public class AccelerometerEventListener  implements SensorEventListener {
     // FIELDS //
     TextView output;
     LineGraphView graph;
+    Context context;
+    FileOutputStream os;
+    PrintWriter osw;
+    int maxDataPoints = 5000;
+    int currentAmountOfDataPoints = 0;
 
     float x;
     float y;
@@ -39,6 +44,15 @@ public class AccelerometerEventListener  implements SensorEventListener {
 
         output = outputView;
         graph = graphView;
+        context = Lab2_201_14.getAppContext();
+
+        // Initializing the output stream and print writer
+        try {
+            os = new FileOutputStream(new File(context.getExternalFilesDir(null), "external.txt"));
+            osw = new PrintWriter(new OutputStreamWriter(os));
+        } catch (IOException e) {
+            Log.d("CATCHING IOEXCEPTION", "IOException caught!! AHHH!! OMG PANIC!");
+        }
 
     }
 
@@ -69,23 +83,18 @@ public class AccelerometerEventListener  implements SensorEventListener {
             // Add point to graph
             graph.addPoint(se.values);
 
+            // Output data to file
+            // A safety precaution to make sure it doesn't output data forever
+            if (currentAmountOfDataPoints < maxDataPoints) {
+                osw.println(x + " " + y + " " + z);
+                currentAmountOfDataPoints++;
+            } else if (currentAmountOfDataPoints == maxDataPoints) { // Close file after desired number of data points is reached
+                osw.close();
+            }
+
         }
 
-        // Output data to file
-        try {
-            // External storage
-            String i = "hey world "; //TODO
-            Context context = Lab2_201_14.getAppContext();
 
-            FileOutputStream os = new FileOutputStream(new File(context.getExternalFilesDir(null), "external.txt"));
-            PrintWriter osw = new PrintWriter(new OutputStreamWriter(os));
-
-            osw.println(i);
-            osw.close();
-
-        } catch(IOException e) {
-            Log.d("CATCHING IOEXCEPTION", "IOException caught!! AHHH!! OMG PANIC!");
-        }
 
     }
 
