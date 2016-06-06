@@ -31,12 +31,17 @@ public class AccelerometerEventListener  implements SensorEventListener {
     Context context;
     FileOutputStream os;
     PrintWriter osw;
-    int maxDataPoints = 5000;
+
+    int maxDataPoints = 2500;
     int currentAmountOfDataPoints = 0;
 
     float x;
     float y;
     float z;
+    float smoothX;
+    float smoothY;
+    float smoothZ;
+    int smoothing = 10; // Smoothing factor
     // END OF FIELDS //
 
     // Constructor
@@ -71,8 +76,31 @@ public class AccelerometerEventListener  implements SensorEventListener {
             y = se.values[1];
             z = se.values[2];
 
+            // Smoothing algorithm
+            if (currentAmountOfDataPoints == 0) {
+                smoothX = x;
+                smoothY = y;
+                smoothZ = z;
+            } else {
+                smoothX += (x - smoothX) / smoothing;
+                smoothY += (y - smoothY) / smoothing;
+                smoothZ += (z - smoothZ) / smoothing;
+            }
+
+            // Output data to file
+            // A safety precaution to make sure it doesn't output data forever
+            if (currentAmountOfDataPoints < maxDataPoints) {
+                // Printing to file
+                osw.println(x + " " + y + " " + z + " " + smoothX + " " + smoothY + " " + smoothZ);
+            }
+            // Close file after desired number of data points is reached
+            else if (currentAmountOfDataPoints == maxDataPoints) {
+                osw.close();
+            }
+            currentAmountOfDataPoints++;
+
             // Screen output
-            output.setText("Accelerometer: " + String.valueOf(x + " m/s^2, " + y + " m/s^2, " + z + " m/s^2") + "\n" + String.valueOf(accelerometerMax.getMaxString()) + "\n");
+            output.setText("Accelerometer: " + String.valueOf(x + " m/s^2, " + y + " m/s^2, " + z + " m/s^2") + "\n" + String.valueOf(accelerometerMax.getMaxString()) + "\n" + "Current number of data points: " + currentAmountOfDataPoints + "\n");
 
             // Compare current sensor readings to current max
             accelerometerMax.calcMaxX(x);
@@ -82,15 +110,6 @@ public class AccelerometerEventListener  implements SensorEventListener {
 
             // Add point to graph
             graph.addPoint(se.values);
-
-            // Output data to file
-            // A safety precaution to make sure it doesn't output data forever
-            if (currentAmountOfDataPoints < maxDataPoints) {
-                osw.println(x + " " + y + " " + z);
-                currentAmountOfDataPoints++;
-            } else if (currentAmountOfDataPoints == maxDataPoints) { // Close file after desired number of data points is reached
-                osw.close();
-            }
 
         }
 
