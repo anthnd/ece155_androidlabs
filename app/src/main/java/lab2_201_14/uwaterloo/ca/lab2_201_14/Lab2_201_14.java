@@ -64,8 +64,11 @@ public class Lab2_201_14 extends AppCompatActivity {
         graph.setVisibility(View.VISIBLE);
 
         TextView accelerometerDisplay = (TextView) findViewById(R.id.accelerometerLabel);
-        SensorEventListener accelerometerListener = new AccelerometerEventListener(accelerometerDisplay, graph);
+        TextView stepsDisplay = (TextView) findViewById(R.id.numberOfSteps);
+        SensorEventListener accelerometerListener = new AccelerometerEventListener(accelerometerDisplay, stepsDisplay, graph);
         sensorManager.registerListener(accelerometerListener, accelerometerSensor, SensorManager.SENSOR_DELAY_FASTEST);
+
+
 
 
 //TODO for reset button use polymorphism

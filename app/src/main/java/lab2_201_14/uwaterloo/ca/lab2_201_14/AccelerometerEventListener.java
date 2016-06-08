@@ -27,10 +27,14 @@ public class AccelerometerEventListener  implements SensorEventListener {
 
     // FIELDS //
     TextView output;
+    TextView outputSteps;
     LineGraphView graph;
     Context context;
+
     FileOutputStream os;
     PrintWriter osw;
+
+    StepDetector stepCounter;
 
     int maxDataPoints = 2500;
     int currentAmountOfDataPoints = 0;
@@ -45,7 +49,7 @@ public class AccelerometerEventListener  implements SensorEventListener {
     // END OF FIELDS //
 
     // Constructor
-    public AccelerometerEventListener(TextView outputView,LineGraphView graphView) {
+    public AccelerometerEventListener(TextView outputView, TextView stepCounterView, LineGraphView graphView) {
 
         output = outputView;
         graph = graphView;
@@ -58,6 +62,10 @@ public class AccelerometerEventListener  implements SensorEventListener {
         } catch (IOException e) {
             Log.d("CATCHING IOEXCEPTION", "IOException caught!! AHHH!! OMG PANIC!");
         }
+
+        // Step-counter setup
+        outputSteps = stepCounterView;
+        stepCounter = new StepDetector();
 
     }
 
@@ -87,6 +95,8 @@ public class AccelerometerEventListener  implements SensorEventListener {
                 smoothZ += (z - smoothZ) / smoothing;
             }
 
+            stepCounter.inputData(smoothY, currentAmountOfDataPoints);
+
             // Output data to file
             // A safety precaution to make sure it doesn't output data forever
             if (currentAmountOfDataPoints < maxDataPoints) {
@@ -101,6 +111,7 @@ public class AccelerometerEventListener  implements SensorEventListener {
 
             // Screen output
             output.setText("Accelerometer: " + String.valueOf(x + " m/s^2, " + y + " m/s^2, " + z + " m/s^2") + "\n" + String.valueOf(accelerometerMax.getMaxString()) + "\n" + "Current number of data points: " + currentAmountOfDataPoints + "\n");
+            outputSteps.setText("Number of steps v1: " + stepCounter.getNumberOfSteps() + "\n");
 
             // Compare current sensor readings to current max
             accelerometerMax.calcMaxX(x);
@@ -113,18 +124,6 @@ public class AccelerometerEventListener  implements SensorEventListener {
 
         }
 
-
-
     }
-
-//JUNE 1
-//    Context context = Context.MODE_PRIVATE;
-//
-//    File file = new File(context.getFilesDir(),file);
-//    PrintWriter printWriter = new PrintWriter("file.txt");
-//    printWriter.append("Hello World" );
-//    printWriter.close();
-    //File file = new File(context.getFilesDir(), filename);
-    ;
 
 }

@@ -10,7 +10,7 @@ import java.io.PrintWriter;
  * Created by Anthony on 2016-06-06.
  */
 
-public class WalkingData {
+public class WalkingDataFileInput {
 
     // Arrays for each acceleration value type
     static double[] xAccel = new double[3000];
