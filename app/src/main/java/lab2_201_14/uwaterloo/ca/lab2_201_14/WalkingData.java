@@ -12,13 +12,23 @@ import java.io.PrintWriter;
 
 public class WalkingData {
 
-    static double[] xAccel = new double[2500];
-    static double[] yAccel = new double[2500];
-    static double[] zAccel = new double[2500];
-    static double[] filteredxAccel = new double[2500];
-    static double[] filteredyAccel = new double[2500];
-    static double[] filteredzAccel = new double[2500];
+    // Arrays for each acceleration value type
+    static double[] xAccel = new double[3000];
+    static double[] yAccel = new double[3000];
+    static double[] zAccel = new double[3000];
+    static double[] filteredxAccel = new double[3000];
+    static double[] filteredyAccel = new double[3000];
+    static double[] filteredzAccel = new double[3000];
 
+    // Trigger ranges for the Finite-State Machine
+    static double rangeInitialMin = -0.5;
+    static double rangeInitialMax = 0;
+    static double rangePeakMin = 0.16;
+    static double rangePeakMax = 1.25;
+    static double rangeDropMin = -1.25;
+    static double rangeDropMax = -0.25;
+
+    // Constants indicating the states to the switch-case
     private static final int stateInitial = 0;
     private static final int statePeak = 1;
     private static final int stateDrop = 2;
@@ -27,22 +37,24 @@ public class WalkingData {
 
     static int numberOfSteps = 0;
 
+    // Main loop
     public static void main(String[] args) throws IOException {
 
-        // Initializing input and output
+        // Initializing input
         BufferedReader inputStream = null;
-        //PrintWriter outputStream = null;
 
+        // Getting all the data from the .txt and separating into different arrays for each acceleration value type
         try {
-            inputStream = new BufferedReader(new FileReader("walking_data.txt"));
+            // inputStream = new BufferedReader(new FileReader("walking_data.txt"));
+            inputStream = new BufferedReader(new FileReader("external_16steps+14steps.txt"));
 
             String line = inputStream.readLine();
             int i = 0;
 
-            while((line = inputStream.readLine()) != null) {
-                String[] tempArray = line.split(" "); // Separate data
+            while((line = inputStream.readLine()) != null && i < 2499) {
+                String[] tempArray = line.split(" "); // Separate the columns by space character
 
-                // Store data
+                // Store data into appropriate array
                 xAccel[i] = Double.parseDouble(tempArray[0]);
                 yAccel[i] = Double.parseDouble(tempArray[1]);
                 zAccel[i] = Double.parseDouble(tempArray[2]);
@@ -50,49 +62,53 @@ public class WalkingData {
                 filteredyAccel[i] = Double.parseDouble(tempArray[4]);
                 filteredzAccel[i] = Double.parseDouble(tempArray[5]);
 
-                i++; // Increment
+                i++;
             }
-
-
-
         } finally {
             if (inputStream != null) {
                 inputStream.close();
             }
         }
 
+        // Inputting filtered-y acceleration data into the FSM
         for (int z = 0; z < 2500; z++) {
             inputData(filteredyAccel[z], z);
         }
 
-        System.out.println(numberOfSteps);
+        System.out.println("\nNumber of steps counted: " + numberOfSteps);
 
     }
 
+    // Finite-state machine for detecting footsteps
     static public void inputData(double y, int index) {
+
+        index+=2; // Small bugfix to align index values with Excel
 
         switch(currentState) {
 
             case stateInitial:
-                if (y > -0.5 && y < 0) {
+                if (y > rangeInitialMin && y < rangeInitialMax) {
                     System.out.println("Initial to Peak: " + y + " at " + index);
                     currentState = statePeak;
                 }
                 break;
+
             case statePeak:
-                if (y > 0.37 && y < 1.25) {
+                if (y > rangePeakMin && y < rangePeakMax) {
                     System.out.println("Peak to Drop: " + y + " at " + index);
                     currentState = stateDrop;
                 }
                 break;
+
             case stateDrop:
-                if (y < -0.75 && y > -1.25) {
+                if (y > rangeDropMin && y < rangeDropMax) {
                     // currentState = stateReturn;
                     currentState = stateInitial;
                     numberOfSteps++;
-                    System.out.println("Step complete: " + y + " at " + index);
+                    System.out.println("Step " + numberOfSteps + " complete: " + y + " at " + index + "\n");
                 }
                 break;
+
             case stateReturn:
                 if (y > -0.5 && y < 0) {
                     currentState = stateInitial;
@@ -100,6 +116,7 @@ public class WalkingData {
                     System.out.println("Step at " + index);
                 }
                 break;
+
             default:
                 break;
 
