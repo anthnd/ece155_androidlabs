@@ -1,2 +1,2 @@
-# ece155_group-201-14
+# ECE 155 Android Lab Projects
 Lab projects in the ECE 155 course at the University of Waterloo
