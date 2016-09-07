@@ -1,5 +1,5 @@
 # ECE 155 Android Lab Projects
-All iterations of the Android lab project for ECE155.
+All iterations of the Android lab project for ECE155 at the University of Waterloo
 
 
 Final form can be found in lab4_beta
