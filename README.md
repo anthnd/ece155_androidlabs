@@ -1,6 +1,4 @@
-# ECE 155 Android Lab Projects
-All iterations of the Android lab project for ECE155 at the University of Waterloo
-
+# ECE 155 GPS App
 
 Final form can be found in lab4_beta
 
